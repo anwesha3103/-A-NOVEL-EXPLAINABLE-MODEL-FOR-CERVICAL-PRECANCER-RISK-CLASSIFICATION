@@ -1,0 +1,129 @@
+"""
+src/data_loader.py
+==================
+Handles loading images and metadata from the IARC ImageBank VIA dataset.
+"""
+
+import os
+import cv2
+import numpy as np
+import pandas as pd
+
+from config import DATA_DIR, EXCEL_IMAGES, EXCEL_META, IMG_SIZE, LABEL_MAP
+
+
+# ─── Metadata ─────────────────────────────────────────────────────────────────
+
+def load_metadata():
+    """Load both Excel sheets and return as DataFrames."""
+    cases_images = pd.read_excel(EXCEL_IMAGES)
+    cases_meta   = pd.read_excel(EXCEL_META)
+    print(f"[data_loader] Loaded {len(cases_meta)} case metadata rows.")
+    return cases_images, cases_meta
+
+
+def build_metadata_dict(cases_meta: pd.DataFrame) -> dict:
+    """
+    Build a case_number → metadata dict for fast lookup.
+    Numeric VIA labels are mapped using LABEL_MAP.
+    """
+    meta_dict = {}
+    for _, row in cases_meta.iterrows():
+        case_num = int(row["CaseNumber"])
+        via_raw  = row["VIA"]
+        label    = LABEL_MAP.get(via_raw, -1)
+        meta_dict[case_num] = {
+            "CaseID":    row["CaseID"],
+            "VIA":       label,
+            "VIA_label": via_raw,
+        }
+    return meta_dict
+
+
+# ─── Folder helpers ───────────────────────────────────────────────────────────
+
+def list_all_case_folders(dataset_path: str = DATA_DIR) -> list:
+    """Return all sub-folder names in the dataset directory."""
+    folders = [
+        f for f in os.listdir(dataset_path)
+        if os.path.isdir(os.path.join(dataset_path, f))
+    ]
+    return folders
+
+
+def find_case_folder(case_number: int, dataset_path: str = DATA_DIR) -> str | None:
+    """
+    Case-insensitive search for a folder matching 'Case <number>'.
+    Returns the actual folder name or None.
+    """
+    target = f"case {case_number:03d}".lower()
+    all_folders = {f.lower(): f for f in list_all_case_folders(dataset_path)}
+    return all_folders.get(target)
+
+
+# ─── Image loading ────────────────────────────────────────────────────────────
+
+def load_case_images(case_folder_path: str) -> np.ndarray:
+    """
+    Load and resize all images from a case folder.
+    Returns an (N, H, W, 3) float32 numpy array, or empty array if no images.
+    """
+    images = []
+    for fname in sorted(os.listdir(case_folder_path)):
+        img_path = os.path.join(case_folder_path, fname)
+        img = cv2.imread(img_path)
+        if img is not None:
+            img = cv2.resize(img, IMG_SIZE)
+            images.append(img.astype("float32"))
+        else:
+            print(f"[data_loader] Skipping invalid image: {img_path}")
+    return np.array(images) if images else np.array([])
+
+
+# ─── Full dataset builder ─────────────────────────────────────────────────────
+
+def prepare_dataset(dataset_path: str = DATA_DIR):
+    """
+    Walk every case folder, load images, attach VIA labels.
+    Returns:
+        X : np.ndarray  shape (N, 224, 224, 3)  float32
+        y : np.ndarray  shape (N,)               int
+    """
+    _, cases_meta = load_metadata()
+    meta_dict     = build_metadata_dict(cases_meta)
+
+    X, y = [], []
+    failed = []
+
+    for folder in list_all_case_folders(dataset_path):
+        folder_path = os.path.join(dataset_path, folder)
+        try:
+            case_num = int(folder.split()[-1])
+        except ValueError:
+            continue
+
+        meta = meta_dict.get(case_num)
+        if meta is None:
+            print(f"[data_loader] No metadata for {folder}, skipping.")
+            continue
+
+        images = load_case_images(folder_path)
+        if len(images) == 0:
+            failed.append(folder)
+            continue
+
+        label = meta["VIA"]
+        X.extend(images)
+        y.extend([label] * len(images))
+
+    print(f"[data_loader] Processed {len(meta_dict)} cases.")
+    print(f"[data_loader] Failed: {failed}")
+
+    return np.array(X, dtype="float32"), np.array(y)
+
+
+if __name__ == "__main__":
+    X, y = prepare_dataset()
+    print(f"Dataset shape: X={X.shape}, y={y.shape}")
+    unique, counts = np.unique(y, return_counts=True)
+    print("Class distribution:", dict(zip(unique, counts)))
