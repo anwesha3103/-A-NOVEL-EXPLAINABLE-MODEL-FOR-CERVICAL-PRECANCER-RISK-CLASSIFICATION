@@ -1,0 +1,65 @@
+"""
+src/model.py
+============
+Defines the MobileNetV2-based cervical cancer classifier.
+The Dropout layer stays active at inference time (MC Dropout for uncertainty).
+"""
+
+from tensorflow.keras.applications import MobileNetV2
+from tensorflow.keras.layers import Dense, Flatten, Dropout, Input
+from tensorflow.keras.models import Model
+from tensorflow.keras.optimizers import Adam
+
+from config import IMG_SIZE, IMG_CHANNELS, LEARNING_RATE, DROPOUT_RATE
+
+
+def build_model(num_classes: int = 3) -> Model:
+    """
+    Build and compile the MobileNetV2 transfer-learning model.
+
+    Architecture:
+        MobileNetV2 (frozen ImageNet weights)
+        → Flatten
+        → Dense(128, relu)
+        → Dropout(0.5)      ← kept active during inference for MC Dropout
+        → Dense(num_classes, softmax)
+
+    Args:
+        num_classes: number of output classes (default 3)
+
+    Returns:
+        Compiled Keras Model
+    """
+    input_shape = (*IMG_SIZE, IMG_CHANNELS)
+
+    # Pre-trained backbone (frozen)
+    base_model = MobileNetV2(
+        weights="imagenet",
+        include_top=False,
+        input_shape=input_shape,
+    )
+    base_model.trainable = False
+
+    # Custom classification head
+    inputs  = Input(shape=input_shape)
+    x       = base_model(inputs, training=False)
+    x       = Flatten()(x)
+    x       = Dense(128, activation="relu")(x)
+    x       = Dropout(DROPOUT_RATE)(x)          # MC Dropout: active at test time
+    outputs = Dense(num_classes, activation="softmax")(x)
+
+    model = Model(inputs, outputs, name="cervical_cancer_classifier")
+
+    model.compile(
+        optimizer=Adam(learning_rate=LEARNING_RATE),
+        loss="sparse_categorical_crossentropy",
+        metrics=["accuracy"],
+    )
+
+    model.summary()
+    return model
+
+
+if __name__ == "__main__":
+    m = build_model()
+    print("Model built successfully.")
