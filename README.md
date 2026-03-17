@@ -4,32 +4,27 @@ Predicts Negative / Positive / Suspicious of cancer with uncertainty estimation 
 
 Project Structure
 cervical_cancer_classifier/
-│
-├── config.py              ← ALL paths & hyperparameters (edit this first)
-│
+├── config.py
+├── app.py
+├── requirements.txt
+├── README.md
 ├── src/
-│   ├── data_loader.py     ← dataset loading & metadata parsing
-│   ├── model.py           ← MobileNetV2 architecture
-│   ├── train.py           ← full training pipeline
-│   ├── evaluate.py        ← evaluation & per-case predictions
-│   └── predict.py         ← single-image inference (CLI or import)
-│
-├── app.py                 ← Gradio web UI
-│
+│   ├── __init__.py
+│   ├── data_loader.py
+│   ├── model.py
+│   ├── train.py
+│   ├── evaluate.py
+│   └── predict.py
 ├── data/
 │   └── raw/
-│       └── IARC_ImageBank_VIA/     ← place your dataset here
+│       └── IARC_ImageBank_VIA/
 │           ├── Cases - Images.xlsx
 │           ├── Cases Meta data.xlsx
-│           └── Case 001/ ... Case 186/
-│
+│           └── Case 001/  ...  Case 186/
 ├── models/
-│   └── cervical_model.h5   ← saved model (auto-created by train.py)
-│
-├── notebooks/
-│   └── exploration.ipynb   ← original Colab notebook (reference)
-│
-└── requirements.txt
+│   └── cervical_model.h5
+└── notebooks/
+    └── exploration.ipynb
 
 Quick Start
 1 — Install dependencies
