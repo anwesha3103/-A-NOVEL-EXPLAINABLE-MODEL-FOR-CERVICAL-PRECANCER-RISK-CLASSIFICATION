@@ -1,4 +1,4 @@
-# 🧬 Cervical Cancer Risk Classifier
+#  Cervical Cancer Risk Classifier
 
 <div align="center">
 
@@ -8,7 +8,7 @@
 ![Gradio](https://img.shields.io/badge/Gradio-UI-orange?style=for-the-badge)
 ![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
 
-**AI-powered cervical cancer risk detection from VIA (Visual Inspection with Acetic Acid) images**  
+**A-NOVEL-EXPLAINABLE-MODEL-FOR-CERVICAL-PRECANCER-RISK-CLASSIFICATION**  
 *with Uncertainty Estimation via Monte Carlo Dropout*
 
 [Features](#-features) • [Demo](#-demo) • [Installation](#-installation) • [Usage](#-usage) • [Model](#-model-architecture) • [Dataset](#-dataset)
@@ -17,33 +17,33 @@
 
 ---
 
-## 🎯 Overview
+## Overview
 
 This project uses **transfer learning on MobileNetV2** to classify cervical images into three risk categories:
 
 | Label | Description | Recommended Action |
 |-------|-------------|-------------------|
-| ✅ **Negative** | No abnormalities detected | Regular check-ups |
-| ⚠️ **Positive** | Abnormalities present | Follow up with doctor |
-| 🚨 **Suspicious of Cancer** | High-risk indicators | Immediate medical attention |
+| **Negative** | No abnormalities detected | Regular check-ups |
+| **Positive** | Abnormalities present | Follow up with doctor |
+| **Suspicious of Cancer** | High-risk indicators | Immediate medical attention |
 
 What makes this classifier unique is its use of **Monte Carlo Dropout** — the model doesn't just predict a label, it also tells you *how confident* it is. Low confidence = flag for human review.
 
 ---
 
-## ✨ Features
+##  Features
 
-- 🔬 **3-class cervical image classification** (Negative / Positive / Suspicious)
-- 📊 **Uncertainty estimation** via Monte Carlo Dropout (50 stochastic forward passes)
-- ⚖️ **Class imbalance handling** with SMOTE oversampling
-- 🏋️ **Transfer learning** on MobileNetV2 pretrained on ImageNet
-- 🌐 **Gradio web interface** — upload an image, get instant results
-- 💾 **~98.8% validation accuracy** on IARC ImageBank VIA dataset
-- 🐍 Fully modular Python codebase — easy to extend and retrain
+-  **3-class cervical image classification** (Negative / Positive / Suspicious)
+-  **Uncertainty estimation** via Monte Carlo Dropout (50 stochastic forward passes)
+-  **Class imbalance handling** with SMOTE oversampling
+-  **Transfer learning** on MobileNetV2 pretrained on ImageNet
+-  **Gradio web interface** — upload an image, get instant results
+-  **~98.8% validation accuracy** on IARC ImageBank VIA dataset
+-  Fully modular Python codebase — easy to extend and retrain
 
 ---
 
-## 🖥️ Demo
+##  Demo
 
 Launch the web app and upload any cervical image:
 
@@ -57,10 +57,10 @@ Then open **http://localhost:7860** in your browser.
 
 **Example output:**
 ```
-🩺 Diagnosis:        Positive
-📊 Confidence:       0.9241
-⚠️ Uncertainty Score: 0.0183
-📌 Precaution:       Follow up with your doctor for additional screening.
+ Diagnosis:        Positive
+ Confidence:       0.9241
+ Uncertainty Score: 0.0183
+ Precaution:       Follow up with your doctor for additional screening.
 ```
 
 ---
@@ -98,7 +98,7 @@ cervical_cancer_classifier/
 
 ---
 
-## 🚀 Installation
+##  Installation
 
 ### 1 — Clone & set up environment
 
@@ -134,7 +134,7 @@ MODEL_PATH = os.path.join(MODEL_DIR, "96%accuracy.h5")
 
 ---
 
-## 🧪 Usage
+##  Usage
 
 ### Launch the web app
 ```bash
@@ -158,7 +158,7 @@ python -m src.train
 
 ---
 
-## 🏗️ Model Architecture
+##  Model Architecture
 
 ```
 Input (224×224×3)
@@ -184,7 +184,7 @@ Standard neural networks output a single prediction with no sense of confidence.
 
 ---
 
-## 📊 Dataset
+##  Dataset
 
 **IARC ImageBank VIA** — 186 patient cases, ~370 cervical images (before/after acetic acid application)
 
@@ -198,7 +198,7 @@ Standard neural networks output a single prediction with no sense of confidence.
 
 ---
 
-## ⚙️ Configuration
+##  Configuration
 
 All key settings live in `config.py` — no need to touch other files:
 
@@ -214,7 +214,7 @@ APP_SHARE              = False    # True → public gradio.live link
 
 ---
 
-## 📦 Dependencies
+##  Dependencies
 
 ```
 tensorflow >= 2.12
@@ -231,7 +231,7 @@ matplotlib
 
 ---
 
-## ⚠️ Disclaimer
+##  Disclaimer
 
 > This tool is intended for **research and educational purposes only**.  
 > It is **not** a substitute for professional medical diagnosis.  
@@ -249,5 +249,5 @@ matplotlib
 ---
 
 <div align="center">
-Made with ❤️ for early cervical cancer detection
+
 </div>
