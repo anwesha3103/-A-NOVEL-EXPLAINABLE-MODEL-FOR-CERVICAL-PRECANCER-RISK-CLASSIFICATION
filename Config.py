@@ -2,7 +2,6 @@
 config.py
 =========
 Central config for all paths, hyperparameters, and constants.
-Edit this file instead of hunting through individual scripts.
 """
 
 import os
